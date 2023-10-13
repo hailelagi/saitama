@@ -1,0 +1,5 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "./saitama-rs/Cargo.toml"
+    ]
+}
