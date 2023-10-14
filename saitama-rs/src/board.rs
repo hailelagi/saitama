@@ -1,15 +1,10 @@
 // // EASY MODE: Implement a 3 x 3 board grid
 // // HARD MODE: Implement an n x n board
 
-// pub struct Grid {
-//     row_one: [i8, i8, i8],
-//     row_two: [i8, i]
-// }
+enum Marker{X, O, Empty}
 
-// pub struct Board {
-//     row: 
-// }
-
-// pub struct BoardRow {
-
-// }
+pub struct Grid {
+    row_one: (Marker, Marker, Marker),
+    row_two: (Marker, Marker, Marker),
+    row_three: (Marker, Marker, Marker)
+}

@@ -1,7 +1,8 @@
-use crate::world::World;
 // must read and write to STDOUT using native APIs
 // Implement a game of tic tac toe in two modes - grid and n x n grid
-//
+
+use crate::world::World;
+
 pub mod intro;
 pub mod world;
 
