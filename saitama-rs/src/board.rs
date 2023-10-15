@@ -1,49 +1,60 @@
 // EASY MODE: Implement a 3 x 3 board grid
 // HARD MODE: Implement an n x n board
+use std::io;
 
 use crate::board::Marker::Empty;
+use crate::world::Difficulty;
 use crate::world::World;
 
-enum Marker<'x, 'o> {
-    X(&'x str),
-    O(&'o str),
+#[derive(Debug, Clone, Copy)]
+pub enum Marker {
+    X(&'static str),
+    O(&'static str),
     Empty,
 }
 
-struct Row<'x, 'o>(Marker<'x, 'o>, Marker<'x, 'o>, Marker<'x, 'o>);
+impl Marker {
+    pub fn new(mark: &str) -> io::Result<Self> {
+        match mark {
+            "X" => Ok(Marker::X("X")),
+            "O" => Ok(Marker::O("O")),
+            _ => Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "did you mean X or O?",
+            )),
+        }
+    }
+}
 
-pub enum Board<'x, 'o> {
+impl std::fmt::Display for Marker {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({})", self.to_string().to_uppercase())
+    }
+}
+
+#[derive(Debug)]
+pub enum Board {
     Grid {
-        row_one: Row<'x, 'o>,
-        row_two: Row<'x, 'o>,
-        row_three: Row<'x, 'o>,
+        row_one: (Marker, Marker, Marker),
+        row_two: (Marker, Marker, Marker),
+        row_three: (Marker, Marker, Marker),
     },
     Dynamic,
 }
 
-impl Board<'_, '_> {
-    pub fn build<'x, 'o>(world: World) -> Self {
-        let mark = world.player_marker;
-
+impl Board {
+    pub fn build(world: &World) -> Self {
         match world.difficulty {
-            "EASY" => Board::new_grid(),
-            "HARD" => Board::new_dynamic(),
+            Difficulty::Easy => Board::Grid {
+                row_one: (Empty, Empty, Empty),
+                row_two: (Empty, Empty, Empty),
+                row_three: (Empty, Empty, Empty),
+            },
+            Difficulty::Hard => Board::Dynamic,
         }
     }
 
-    pub fn choose_position(self) -> String {
-        String::from("maybe?")
-    }
-
-    fn new_grid() -> Self {
-        return Board::Grid {
-            row_one: Row(Empty, Empty, Empty),
-            row_two: Row(Empty, Empty, Empty),
-            row_three: Row(Empty, Empty, Empty),
-        };
-    }
-
-    fn new_dynamic() -> Self {
-        return Board::Dynamic
+    pub fn choose_position(self, marker: Marker) -> io::Result<Self> {
+        Ok(Board::Dynamic)
     }
 }
