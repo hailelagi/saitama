@@ -8,6 +8,7 @@ pub struct World<'a> {
     // TODO: store an rng to determine how difficult the ai will be
 }
 
+
 impl World<'static> {
     pub fn build<'a>(difficulty: &'a str, marker: String) -> World<'a> {
         World {
