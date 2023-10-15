@@ -1,3 +1,4 @@
+use std::fmt::format;
 // EASY MODE: Implement a 3 x 3 board grid
 // HARD MODE: Implement an n x n board
 use std::io;
@@ -54,7 +55,32 @@ impl Board {
         }
     }
 
-    pub fn choose_position(self, marker: Marker) -> io::Result<Self> {
+    pub fn place_position(self, position: String, marker: Marker) -> io::Result<Self> {
+        // TODO: validate board rules
         Ok(Board::Dynamic)
+    }
+}
+
+impl std::fmt::Display for Board {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            Board::Grid {
+                row_one,
+                row_two,
+                row_three,
+            } => {
+                let pretty_board = format!(
+                    "
+        +------+-----+-------+\n
+        |  {}  |  {} |   {}  |\n
+        +------+-----+-------+\n
+        ",
+                    row_one.0, row_one.1, row_one.2
+                );
+
+                write!(f, "{}", pretty_board)
+            }
+            _ => write!(f, "todo"),
+        }
     }
 }

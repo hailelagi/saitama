@@ -4,7 +4,7 @@ use crate::world::{Difficulty, World};
 use std::io::{self, Write};
 
 const TITLE_MESSAGE: &[u8] = b"Hi, welcome to Tic Tac Toe! would you like to be X or O?\n >>> ";
-const INTRO_MESSAGE: &str = "Please select a difficulty! \n 1. HARD or 'H' \n 2. EASY or 'H'";
+const INTRO_MESSAGE: &str = "Please select a difficulty! \n 1. HARD or 'H' \n 2. EASY or 'E'";
 
 pub fn select_difficulty(marker: Marker) -> io::Result<World> {
     loop {
@@ -29,10 +29,10 @@ pub fn title_message() {
 }
 
 pub fn marker_choice() -> io::Result<Marker> {
-    let mark = world::player_input()?;
-    let mark = Marker::new(&mark)?;
+    let player_mark = world::player_input()?;
+    let mark = Marker::new(&player_mark)?;
 
-    let message = format!("You are now player {mark} - {INTRO_MESSAGE}");
+    let message = format!("You are now player {player_mark} - {INTRO_MESSAGE}");
     world::output_message(&message);
 
     Ok(mark)

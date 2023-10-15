@@ -2,7 +2,9 @@
 // Implement a game of tic tac toe in two modes - grid and n x n grid
 // TODO: tests :)
 
-use crate::board::Board;
+use std::marker;
+
+use crate::board::{Board, Marker};
 
 pub mod board;
 pub mod intro;
@@ -13,28 +15,26 @@ fn main() {
 
     loop {
         match render_world() {
-            Ok(world) => {
-                let board = Board::build(&world);
-                println!("DEBUG: {:?}", board);
-                // render_session(world.player_marker, board);
-                outro();
-                
-                break;
-            }
-
+            Ok(()) => outro(),
             Err(e) => {
                 world::output_message(e.to_string().as_str());
                 continue;
             }
         }
     }
-
-    // panic!("replace me with a proper exit")
 }
 
-fn render_world<'a>() -> Result<world::World, std::io::Error> {
-    let player_marker = intro::marker_choice()?;
-    let game_world = intro::select_difficulty(player_marker)?;
+fn render_world() -> Result<(), std::io::Error> {
+    let game_world = render_intro()?;
+    let board_session = render_session(game_world)?;
+
+    Ok(board_session)
+}
+
+fn render_intro() -> Result<world::World, std::io::Error> {
+    let marker = intro::marker_choice()?;
+    let game_world = intro::select_difficulty(marker)?;
+
     let confirm_message = format!("You're playing on {} mode :)", game_world.difficulty);
 
     world::output_message(&confirm_message);
@@ -42,12 +42,19 @@ fn render_world<'a>() -> Result<world::World, std::io::Error> {
     Ok(game_world)
 }
 
-// fn render_session<'a>(marker: Marker, board: Board) -> Result<world::World, std::io::Error> {
-//     let board = Board::choose_position(board, marker)?;
-//     let board = Board::validate_rules(board);
+fn render_session(world: world::World) -> Result<(), std::io::Error> {
+    let board = Board::build(&world);
 
-//     Ok(board)
-// }
+    println!("DEBUG: {}", board);
+
+    loop {
+        let position = world::player_input()?;
+        let board = Board::place_position(board, position, world.player_marker)?;
+        break;
+    }
+
+    Ok(())
+}
 
 fn outro() {
     panic!("replace me with a proper exit")
