@@ -4,7 +4,10 @@
 
 use std::marker;
 
-use crate::board::{Board, Marker};
+use crate::{
+    board::{Board, Marker},
+    world::World,
+};
 
 pub mod board;
 pub mod intro;
@@ -13,15 +16,23 @@ pub mod world;
 fn main() {
     intro::title_message();
 
-    loop {
-        match render_world() {
-            Ok(()) => outro(),
-            Err(e) => {
-                world::output_message(e.to_string().as_str());
-                continue;
-            }
-        }
-    }
+    let my_world = World {
+        difficulty: world::Difficulty::Easy,
+        player_marker: board::Marker::Empty,
+    };
+    let board = Board::build(&my_world);
+
+    print!("{}", board);
+
+    // loop {
+    //     match render_world() {
+    //         Ok(()) => outro(),
+    //         Err(e) => {
+    //             world::output_message(e.to_string().as_str());
+    //             continue;
+    //         }
+    //     }
+    // }
 }
 
 fn render_world() -> Result<(), std::io::Error> {
@@ -45,7 +56,7 @@ fn render_intro() -> Result<world::World, std::io::Error> {
 fn render_session(world: world::World) -> Result<(), std::io::Error> {
     let board = Board::build(&world);
 
-    println!("DEBUG: {}", board);
+    print!("{}", board);
 
     loop {
         let position = world::player_input()?;
