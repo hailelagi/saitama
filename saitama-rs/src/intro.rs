@@ -1,4 +1,4 @@
-use crate::board::Marker;
+use crate::board::marker::Marker;
 use crate::world;
 use crate::world::{Difficulty, World};
 use std::io::{self, Write};

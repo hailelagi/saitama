@@ -1,41 +1,7 @@
-// EASY MODE: Implement a 3 x 3 board grid
-// HARD MODE: Implement an n x n board
-use std::io;
-
-use crate::board::Marker::Empty;
+use crate::board::marker::{Marker, Marker::Empty};
 use crate::world::Difficulty;
 use crate::world::World;
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum Marker {
-    X,
-    O,
-    Empty,
-}
-
-impl Marker {
-    pub fn new(mark: &str) -> io::Result<Self> {
-        match mark {
-            "X" => Ok(Marker::X),
-            "O" => Ok(Marker::O),
-            // todo: custom emoji markers!
-            _ => Err(io::Error::new(
-                io::ErrorKind::InvalidInput,
-                "did you mean X or O?",
-            )),
-        }
-    }
-}
-
-impl std::fmt::Display for Marker {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Marker::O => write!(f, "({})", "O"),
-            Marker::X => write!(f, "({})", "X"),
-            Marker::Empty => write!(f, "({})", ""),
-        }
-    }
-}
+use std::io;
 
 pub struct Row(Marker, Marker, Marker);
 
@@ -60,7 +26,7 @@ impl Board {
         }
     }
 
-    pub fn place_position(self, position: u8, marker: Marker) -> io::Result<Self> {
+    pub fn place_position(self, position: String, marker: Marker) -> io::Result<Self> {
         // find empty space on the board - place marker
         Ok(Board::Dynamic)
     }
@@ -73,7 +39,7 @@ impl Board {
                 row_three,
             } => {
                 let column_win = row_one == row_two && row_two == row_three;
-                
+
                 column_win || row_one.win() || row_two.win() || row_three.win()
             }
 
@@ -84,7 +50,7 @@ impl Board {
 
 impl Row {
     fn win(&self) -> bool {
-        self.0 == self.1 && self.1 == self.2 && self.2 != 
+        self.0 == self.1 && self.1 == self.2 && self.2 != Marker::Empty
     }
 }
 

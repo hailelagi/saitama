@@ -1,4 +1,4 @@
-use crate::board::Marker;
+use crate::board::marker::Marker;
 use std::io::{self, Write};
 
 // Config struct to build and render tic-tac-toe game universe and session

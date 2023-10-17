@@ -1,11 +1,8 @@
 // must read and write to STDOUT using native APIs
 // Implement a game of tic tac toe in two modes - grid and n x n grid
-// TODO: tests :)
-
-use std::marker;
 
 use crate::{
-    board::{Board, Marker},
+    board::{board::Board, marker::Marker},
     world::World,
 };
 
@@ -18,21 +15,19 @@ fn main() {
 
     let my_world = World {
         difficulty: world::Difficulty::Easy,
-        player_marker: board::Marker::Empty,
+        player_marker: Marker::Empty,
     };
     let board = Board::build(&my_world);
 
-    print!("{}", board);
-
-    // loop {
-    //     match render_world() {
-    //         Ok(()) => outro(),
-    //         Err(e) => {
-    //             world::output_message(e.to_string().as_str());
-    //             continue;
-    //         }
-    //     }
-    // }
+    loop {
+        match render_world() {
+            Ok(()) => outro(),
+            Err(e) => {
+                world::output_message(e.to_string().as_str());
+                continue;
+            }
+        }
+    }
 }
 
 fn render_world() -> Result<(), std::io::Error> {
