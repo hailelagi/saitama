@@ -9,16 +9,16 @@ use crate::world::World;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Marker {
-    X(&'static str),
-    O(&'static str),
+    X,
+    O,
     Empty,
 }
 
 impl Marker {
     pub fn new(mark: &str) -> io::Result<Self> {
         match mark {
-            "X" => Ok(Marker::X("X")),
-            "O" => Ok(Marker::O("O")),
+            "X" => Ok(Marker::X),
+            "O" => Ok(Marker::O),
             _ => Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
                 "did you mean X or O?",
@@ -29,7 +29,11 @@ impl Marker {
 
 impl std::fmt::Display for Marker {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "({})", self.to_string().to_uppercase())
+        match self {
+            Marker::O => write!(f, "({})", "O"),
+            Marker::X => write!(f, "({})", "X"),
+            Marker::Empty => write!(f, "({})", ""),
+        }
     }
 }
 
