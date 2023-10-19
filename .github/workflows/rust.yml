@@ -23,4 +23,4 @@ jobs:
 
     defaults:
         run:
-            working-directory: ./saitama-go
+            working-directory: ./saitama-rs
