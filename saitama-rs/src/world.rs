@@ -1,12 +1,15 @@
-use crate::board::marker::Marker;
 use std::io::{self, Write};
+use crate::board::marker::Marker;
+use crate::board::board::Layout;
 
 // Config struct to build and render tic-tac-toe game universe and session
 #[derive(Debug)]
 pub struct World {
+    pub layout: Layout,
     pub difficulty: Difficulty,
     pub player_marker: Marker,
-    // TODO: store an rng to determine how difficult the ai will be
+    // TODO: store an rng to deterministically verify the exact random moves for 
+    // each world/game session
 }
 
 #[derive(Debug)]
@@ -25,10 +28,11 @@ impl std::fmt::Display for Difficulty {
 }
 
 impl World {
-    pub fn build(difficulty: Difficulty, player_marker: Marker) -> World {
+    pub fn build(layout: Layout, difficulty: Difficulty, player_marker: Marker) -> World {
         World {
             difficulty,
             player_marker,
+            layout
         }
     }
 }

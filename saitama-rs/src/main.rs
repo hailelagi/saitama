@@ -13,12 +13,6 @@ pub mod world;
 fn main() {
     intro::title_message();
 
-    let my_world = World {
-        difficulty: world::Difficulty::Easy,
-        player_marker: Marker::Empty,
-    };
-    let board = Board::build(&my_world);
-
     loop {
         match render_world() {
             Ok(()) => outro(),
@@ -39,7 +33,8 @@ fn render_world() -> Result<(), std::io::Error> {
 
 fn render_intro() -> Result<world::World, std::io::Error> {
     let marker = intro::marker_choice()?;
-    let game_world = intro::select_difficulty(marker)?;
+    let difficulty = intro::select_difficulty()?;
+    let game_world = intro::select_layout( marker, difficulty)?;
 
     let confirm_message = format!("You're playing on {} mode :)", game_world.difficulty);
 
@@ -50,8 +45,6 @@ fn render_intro() -> Result<world::World, std::io::Error> {
 
 fn render_session(world: world::World) -> Result<(), std::io::Error> {
     let board = Board::build(&world);
-
-    print!("{}", board);
 
     loop {
         let position = world::player_input()?;

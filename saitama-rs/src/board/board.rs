@@ -1,7 +1,11 @@
 use crate::board::marker::{Marker, Marker::Empty};
-use crate::world::Difficulty;
 use crate::world::World;
-use std::io;
+
+#[derive(Debug)]
+pub enum Layout {
+    Grid,
+    Dynamic(i32, i32),
+}
 
 pub struct Row(Marker, Marker, Marker);
 
@@ -10,24 +14,31 @@ pub enum Board {
         row_one: Row,
         row_two: Row,
         row_three: Row,
+        markers_placed: i32
     },
     Dynamic,
 }
 
 impl Board {
     pub fn build(world: &World) -> Self {
-        match world.difficulty {
-            Difficulty::Easy => Board::Grid {
+        match world.layout {
+            Layout::Grid => Board::Grid {
                 row_one: Row(Empty, Empty, Empty),
                 row_two: Row(Empty, Empty, Empty),
                 row_three: Row(Empty, Empty, Empty),
+                markers_placed: 0
             },
-            Difficulty::Hard => Board::Dynamic,
+            Layout::Dynamic(..) => Board::Dynamic,
         }
     }
 
-    pub fn place_position(self, position: String, marker: Marker) -> io::Result<Self> {
+    pub fn place_position(self, position: i32, marker: Marker) -> io::Result<Self> {
         // find empty space on the board - place marker
+
+        // match position {
+        //     (1, 2, 3) => Ok(Board::Grid { row_one: (), self.row_two, row_three }),
+            
+        // }
         Ok(Board::Dynamic)
     }
 
@@ -37,6 +48,7 @@ impl Board {
                 row_one,
                 row_two,
                 row_three,
+                ..
             } => {
                 let column_win = row_one == row_two && row_two == row_three;
 
@@ -69,6 +81,7 @@ impl std::fmt::Display for Board {
                 row_one,
                 row_two,
                 row_three,
+                ..
             } => write!(f, "{}{}{}", row_one, row_two, row_three),
             Board::Dynamic => write!(f, "{}", "coming soon!"),
         }

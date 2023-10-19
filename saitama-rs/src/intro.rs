@@ -1,18 +1,21 @@
+use std::io::{self, Write};
+
+use crate::board::board::Layout;
 use crate::board::marker::Marker;
 use crate::world;
 use crate::world::{Difficulty, World};
-use std::io::{self, Write};
 
 const TITLE_MESSAGE: &[u8] = b"Hi, welcome to Tic Tac Toe! would you like to be X or O?\n >>> ";
-const INTRO_MESSAGE: &str = "Please select a difficulty! \n 1. HARD or 'H' \n 2. EASY or 'E'";
+const DIFFICULTY_MESSAGE: &str = "Please select a difficulty! \n 1. HARD or 'H' \n 2. EASY or 'E'";
+const LAYOUT_MESSAGE: &str = "Please select the board layout you would like to play on! \n1. GRID";
 
-pub fn select_difficulty(marker: Marker) -> io::Result<World> {
+pub fn select_difficulty() -> io::Result<Difficulty> {
     loop {
         let difficulty_choice = world::player_input()?;
 
         return match difficulty_choice.as_str() {
-            "EASY" | "E" => Ok(World::build(Difficulty::Easy, marker)),
-            "HARD" | "H" => Ok(World::build(Difficulty::Hard, marker)),
+            "EASY" | "E" => Ok(Difficulty::Easy),
+            "HARD" | "H" => Ok(Difficulty::Hard),
             _ => {
                 world::output_message("did you mean EASY or HARD?");
                 continue;
@@ -20,6 +23,24 @@ pub fn select_difficulty(marker: Marker) -> io::Result<World> {
         };
     }
 }
+
+pub fn select_layout(marker: Marker, difficulty: Difficulty) -> io::Result<World> {
+    world::output_message(LAYOUT_MESSAGE);
+
+    loop {
+        let layout_choice = world::player_input()?;
+
+        return match layout_choice.as_str() {
+            "GRID" => Ok(World::build(Layout::Grid, difficulty, marker)),
+            // "DYNAMIC" => Ok(),
+            _ => {
+                world::output_message("did you mean a 3x3 'GRID'?? ");
+                continue;
+            }
+        };
+    }
+}
+
 pub fn title_message() {
     // It's okay to panic if STDIN/STDERR is unavailable
     // TODO: why does writing to stderr happen before stdout?
@@ -32,7 +53,7 @@ pub fn marker_choice() -> io::Result<Marker> {
     let player_mark = world::player_input()?;
     let mark = Marker::new(&player_mark)?;
 
-    let message = format!("You are now player {player_mark} - {INTRO_MESSAGE}");
+    let message = format!("You are now player {player_mark} - {DIFFICULTY_MESSAGE}");
     world::output_message(&message);
 
     Ok(mark)
