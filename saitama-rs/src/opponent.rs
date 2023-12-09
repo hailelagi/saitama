@@ -21,7 +21,7 @@ struct MinMax;
 
 // impl Strategy for MinMax {
 
-// }
+// } 
   
 
 struct Opponent {
@@ -29,11 +29,11 @@ struct Opponent {
     strategy: Strategy,
 }
 
-impl Opponent {
-    fn make_move(&self, world: &World, board: Board) -> Board {
-        match world.difficulty {
-            Difficulty::Easy => 
-        }
-        return board
-    }
-}
+// impl Opponent {
+//     fn make_move(&self, world: &World, board: Board) -> Board {
+//         match world.difficulty {
+//             Difficulty::Easy => 
+//         }
+//         return board
+//     }
+// }

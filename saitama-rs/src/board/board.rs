@@ -1,5 +1,6 @@
 use crate::board::marker::{Marker, Marker::Empty};
 use crate::world::World;
+use std::io;
 
 #[derive(Debug)]
 pub enum Layout {
@@ -14,7 +15,7 @@ pub enum Board {
         row_one: Row,
         row_two: Row,
         row_three: Row,
-        markers_placed: i32
+        markers_placed: i32,
     },
     Dynamic,
 }
@@ -26,19 +27,34 @@ impl Board {
                 row_one: Row(Empty, Empty, Empty),
                 row_two: Row(Empty, Empty, Empty),
                 row_three: Row(Empty, Empty, Empty),
-                markers_placed: 0
+                markers_placed: 0,
             },
             Layout::Dynamic(..) => Board::Dynamic,
         }
     }
 
     pub fn place_position(self, position: i32, marker: Marker) -> io::Result<Self> {
-        // find empty space on the board - place marker
 
-        // match position {
-        //     (1, 2, 3) => Ok(Board::Grid { row_one: (), self.row_two, row_three }),
+        if i <= 3 {
+            Row::
+        } else if i > 3 && <= 6 {
+
+        } else if i > 6 && <= 9 {
             
-        // }
+        } else {
+            0
+        }
+
+        match self {
+            Board::Grid {
+                row_one,
+                row_two,
+                row_three,
+                ..
+            } => Ok(self),
+            _ => Ok(self),
+        };
+
         Ok(Board::Dynamic)
     }
 
@@ -58,9 +74,28 @@ impl Board {
             Board::Dynamic => false,
         }
     }
+
+    pub fn example_board() -> String {
+        format!(
+            "
+        +-----+-----+------+\n
+        |  1  |  2  |   3  |\n
+        +-----+------+-----+\n
+        +-----+------+-----+\n
+        |  4  |  5   |  6  |\n
+        +-----+------+-----+\n
+        +-----+------+-----+\n
+        |  7  |  8   |  9  |\n
+        +-----+------+-----+\n"
+        )
+    }
 }
 
 impl Row {
+    fn update(self, position: i32) -> Self {
+        Row((), (), ())
+    }
+
     fn win(&self) -> bool {
         self.0 == self.1 && self.1 == self.2 && self.2 != Marker::Empty
     }

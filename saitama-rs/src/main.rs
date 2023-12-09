@@ -47,8 +47,13 @@ fn render_session(world: world::World) -> Result<(), std::io::Error> {
     let board = Board::build(&world);
 
     loop {
-        let position = world::player_input()?;
+        // TODO: banned!
+        println!("{}", Board::example_board());
+
+        let position = world::position_input()?;
         let board = Board::place_position(board, position, world.player_marker)?;
+
+        // todo
         break;
     }
 
