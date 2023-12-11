@@ -1,12 +1,9 @@
 // must read and write to STDOUT using native APIs
 // Implement a game of tic tac toe with a min max ai
 
-use board::board::Outcome;
-use std::io::{self, Error};
-use world::output_message;
-
-use crate::board::marker::Marker;
 use crate::{board::board::Board, world::World};
+use board::board::Outcome;
+use opponent::{MinMax, SimpleAI};
 
 pub mod board;
 pub mod intro;
@@ -52,19 +49,32 @@ fn render_session(world: world::World) -> Result<(), std::io::Error> {
 
     loop {
         let position = world::position_input()?;
-        Board::place_position( &mut board, position, world.player_marker)
-            .ok_or(Error::new(io::ErrorKind::InvalidInput, "position taken!"))?;
+        Board::place_position(&mut board, position, world.player_marker);
+
+        match world.difficulty {
+            world::Difficulty::Easy => {
+                position = SimpleAI::choose_position(world, board);
+                Board::place_position(&mut board, position, world.opponent_marker);
+            }
+            world::Difficulty::Hard => {
+                position = MinMax::choose_position(world, board);
+                Board::place_position(&mut board, position, world.opponent_marker);
+            }
+        }
 
         match board.validate_game_rules() {
             Outcome::Draw => {
                 world::output_message("the game ends as a draw!");
-                break Ok(())
-            },
+                break Ok(());
+            }
             Outcome::Win(winner) => {
                 world::output_message(&format!("{} is the winner!", winner));
-                break Ok(())
+                break Ok(());
             }
-            Outcome::Undecided => continue,
+            Outcome::Undecided => {
+                world::output_message(&format!("{}", &board));
+                continue;
+            }
         }
     }
 }

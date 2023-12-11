@@ -14,10 +14,21 @@ pub struct Board {
 }
 
 impl Board {
-    pub fn build(world: &World) -> Self {
+    pub fn build(_world: &World) -> Self {
         Board {
-            state: HashMap::new(),
+            state: HashMap::from([
+                (1, Marker::Empty),
+                (2, Marker::Empty),
+                (3, Marker::Empty),
+                (4, Marker::Empty),
+                (5, Marker::Empty),
+                (6, Marker::Empty),
+                (7, Marker::Empty),
+                (8, Marker::Empty),
+                (9, Marker::Empty),
+            ]),
             markers_placed: 0,
+            difficulty: 
         }
     }
 
@@ -25,11 +36,12 @@ impl Board {
         let board_state = &mut self.state;
 
         match board_state.get(&position) {
-            Some(_) => None,
-            None => {
+            Some(Marker::Empty) => {
                 self.markers_placed += 1;
-                board_state.insert(position, marker)
-            }
+                board_state.insert(position, marker);
+                Some(marker)
+            },
+            None | Some(_) => None
         }
     }
 
@@ -41,12 +53,11 @@ impl Board {
         if self.markers_placed < 3 {
             return Outcome::Undecided;
         } else if self.markers_placed == 9 && !won {
-            return Outcome::Draw
-        }
-        else {
+            return Outcome::Draw;
+        } else {
             match game {
                 (true, marker) => Outcome::Win(marker),
-                (false, _) => Outcome::Undecided
+                (false, _) => Outcome::Undecided,
             }
         }
     }
@@ -107,7 +118,6 @@ impl std::fmt::Display for Board {
         +------+------+------+\n
         |  {}  |  {}  |  {}  |\n
         +------+------+------+",
-            board_state[&0],
             board_state[&1],
             board_state[&2],
             board_state[&3],
@@ -115,7 +125,8 @@ impl std::fmt::Display for Board {
             board_state[&5],
             board_state[&6],
             board_state[&7],
-            board_state[&8]
+            board_state[&8],
+            board_state[&9]
         );
 
         write!(f, "{}", pretty_board)

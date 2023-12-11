@@ -12,8 +12,8 @@ trait Strategy {
     fn choose_position(world: &World, board: Board) -> Board {}
 }
 
-struct SimpleAI;
-struct MinMax;
+pub struct SimpleAI;
+pub struct MinMax;
 
 // impl Strategy for SimpleAI {
     
