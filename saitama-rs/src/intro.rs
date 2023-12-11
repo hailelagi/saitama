@@ -1,13 +1,11 @@
 use std::io::{self, Write};
 
-use crate::board::board::Layout;
 use crate::board::marker::Marker;
 use crate::world;
-use crate::world::{Difficulty, World};
+use crate::world::Difficulty;
 
 const TITLE_MESSAGE: &[u8] = b"Hi, welcome to Tic Tac Toe! would you like to be X or O?\n >>> ";
 const DIFFICULTY_MESSAGE: &str = "Please select a difficulty! \n 1. HARD or 'H' \n 2. EASY or 'E'";
-const LAYOUT_MESSAGE: &str = "Please select the board layout you would like to play on! \n1. GRID";
 
 pub fn select_difficulty() -> io::Result<Difficulty> {
     loop {
@@ -18,23 +16,6 @@ pub fn select_difficulty() -> io::Result<Difficulty> {
             "HARD" | "H" => Ok(Difficulty::Hard),
             _ => {
                 world::output_message("did you mean EASY or HARD?");
-                continue;
-            }
-        };
-    }
-}
-
-pub fn select_layout(marker: Marker, difficulty: Difficulty) -> io::Result<World> {
-    world::output_message(LAYOUT_MESSAGE);
-
-    loop {
-        let layout_choice = world::player_input()?;
-
-        return match layout_choice.as_str() {
-            "GRID" => Ok(World::build(Layout::Grid, difficulty, marker)),
-            // "DYNAMIC" => Ok(),
-            _ => {
-                world::output_message("did you mean a 3x3 'GRID'?? ");
                 continue;
             }
         };

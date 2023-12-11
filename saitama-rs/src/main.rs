@@ -1,10 +1,12 @@
 // must read and write to STDOUT using native APIs
-// Implement a game of tic tac toe in two modes - grid and n x n grid
+// Implement a game of tic tac toe with a min max ai
 
-use crate::{
-    board::{board::Board, marker::Marker},
-    world::World,
-};
+use board::board::Outcome;
+use std::io::{self, Error};
+use world::output_message;
+
+use crate::board::marker::Marker;
+use crate::{board::board::Board, world::World};
 
 pub mod board;
 pub mod intro;
@@ -25,7 +27,7 @@ fn main() {
 }
 
 fn render_world() -> Result<(), std::io::Error> {
-    let game_world = render_intro()?;
+    let game_world: World = render_intro()?;
     let board_session = render_session(game_world)?;
 
     Ok(board_session)
@@ -34,7 +36,7 @@ fn render_world() -> Result<(), std::io::Error> {
 fn render_intro() -> Result<world::World, std::io::Error> {
     let marker = intro::marker_choice()?;
     let difficulty = intro::select_difficulty()?;
-    let game_world = intro::select_layout( marker, difficulty)?;
+    let game_world = World::build(difficulty, marker);
 
     let confirm_message = format!("You're playing on {} mode :)", game_world.difficulty);
 
@@ -44,20 +46,27 @@ fn render_intro() -> Result<world::World, std::io::Error> {
 }
 
 fn render_session(world: world::World) -> Result<(), std::io::Error> {
-    let board = Board::build(&world);
+    let mut board = Board::build(&world);
+    let example_board = format!("{}", Board::example_board());
+    world::output_message(&example_board);
 
     loop {
-        // TODO: banned!
-        println!("{}", Board::example_board());
-
         let position = world::position_input()?;
-        let board = Board::place_position(board, position, world.player_marker)?;
+        Board::place_position( &mut board, position, world.player_marker)
+            .ok_or(Error::new(io::ErrorKind::InvalidInput, "position taken!"))?;
 
-        // todo
-        break;
+        match board.validate_game_rules() {
+            Outcome::Draw => {
+                world::output_message("the game ends as a draw!");
+                break Ok(())
+            },
+            Outcome::Win(winner) => {
+                world::output_message(&format!("{} is the winner!", winner));
+                break Ok(())
+            }
+            Outcome::Undecided => continue,
+        }
     }
-
-    Ok(())
 }
 
 fn outro() {

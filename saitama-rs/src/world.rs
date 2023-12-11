@@ -1,13 +1,10 @@
-use std::io::{self, Write, Error};
 use rand::rngs::ThreadRng;
-
-use crate::board::board::Layout;
+use std::io::{self, Error, Write};
 use crate::board::marker::Marker;
 
 // Config struct to build and render tic-tac-toe game universe and session
 #[derive(Debug)]
 pub struct World {
-    pub layout: Layout,
     pub difficulty: Difficulty,
     pub player_marker: Marker,
     pub seed: ThreadRng,
@@ -29,11 +26,10 @@ impl std::fmt::Display for Difficulty {
 }
 
 impl World {
-    pub fn build(layout: Layout, difficulty: Difficulty, player_marker: Marker) -> World {
+    pub fn build(difficulty: Difficulty, player_marker: Marker) -> World {
         World {
             difficulty,
             player_marker,
-            layout,
             seed: rand::thread_rng(),
         }
     }
@@ -51,7 +47,7 @@ pub fn player_input() -> io::Result<String> {
 
 pub fn position_input() -> io::Result<i32> {
     output_message("Please input a number from 1 - 9 to select a position on the grid");
-    
+
     let mut input_buffer = String::new();
     io::stdin().read_line(&mut input_buffer)?;
 

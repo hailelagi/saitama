@@ -1,77 +1,53 @@
-use crate::board::marker::{Marker, Marker::Empty};
+use crate::board::marker::Marker;
 use crate::world::World;
-use std::io;
+use std::collections::HashMap;
 
-#[derive(Debug)]
-pub enum Layout {
-    Grid,
-    Dynamic(i32, i32),
+pub enum Outcome {
+    Win(Marker),
+    Undecided,
+    Draw,
 }
 
-pub struct Row(Marker, Marker, Marker);
-
-pub enum Board {
-    Grid {
-        row_one: Row,
-        row_two: Row,
-        row_three: Row,
-        markers_placed: i32,
-    },
-    Dynamic,
+pub struct Board {
+    pub state: HashMap<i32, Marker>,
+    markers_placed: i32,
 }
 
 impl Board {
     pub fn build(world: &World) -> Self {
-        match world.layout {
-            Layout::Grid => Board::Grid {
-                row_one: Row(Empty, Empty, Empty),
-                row_two: Row(Empty, Empty, Empty),
-                row_three: Row(Empty, Empty, Empty),
-                markers_placed: 0,
-            },
-            Layout::Dynamic(..) => Board::Dynamic,
+        Board {
+            state: HashMap::new(),
+            markers_placed: 0,
         }
     }
 
-    pub fn place_position(self, position: i32, marker: Marker) -> io::Result<Self> {
+    pub fn place_position(&mut self, position: i32, marker: Marker) -> Option<Marker> {
+        let board_state = &mut self.state;
 
-        if i <= 3 {
-            Row::
-        } else if i > 3 && <= 6 {
-
-        } else if i > 6 && <= 9 {
-            
-        } else {
-            0
-        }
-
-        match self {
-            Board::Grid {
-                row_one,
-                row_two,
-                row_three,
-                ..
-            } => Ok(self),
-            _ => Ok(self),
-        };
-
-        Ok(Board::Dynamic)
-    }
-
-    pub fn won_board(&self) -> bool {
-        match self {
-            Board::Grid {
-                row_one,
-                row_two,
-                row_three,
-                ..
-            } => {
-                let column_win = row_one == row_two && row_two == row_three;
-
-                column_win || row_one.win() || row_two.win() || row_three.win()
+        match board_state.get(&position) {
+            Some(_) => None,
+            None => {
+                self.markers_placed += 1;
+                board_state.insert(position, marker)
             }
+        }
+    }
 
-            Board::Dynamic => false,
+    pub fn validate_game_rules(&self) -> Outcome {
+        let board_state = &self.state;
+        let game = winning_game(board_state);
+        let (won, _) = game;
+
+        if self.markers_placed < 3 {
+            return Outcome::Undecided;
+        } else if self.markers_placed == 9 && !won {
+            return Outcome::Draw
+        }
+        else {
+            match game {
+                (true, marker) => Outcome::Win(marker),
+                (false, _) => Outcome::Undecided
+            }
         }
     }
 
@@ -91,48 +67,62 @@ impl Board {
     }
 }
 
-impl Row {
-    fn update(self, position: i32) -> Self {
-        Row((), (), ())
+fn winning_game(board_state: &HashMap<i32, Marker>) -> (bool, Marker) {
+    // row search O(1) baby, who cares if it's ugly :)
+    if board_state[&1] == board_state[&2] && board_state[&2] == board_state[&3] {
+        return (true, board_state[&1]);
+    } else if board_state[&4] == board_state[&5] && board_state[&5] == board_state[&6] {
+        return (true, board_state[&4]);
+    } else if board_state[&7] == board_state[&8] && board_state[&8] == board_state[&9] {
+        return (true, board_state[&7]);
     }
-
-    fn win(&self) -> bool {
-        self.0 == self.1 && self.1 == self.2 && self.2 != Marker::Empty
+    // column search
+    else if board_state[&1] == board_state[&4] && board_state[&4] == board_state[&7] {
+        return (true, board_state[&1]);
+    } else if board_state[&2] == board_state[&5] && board_state[&5] == board_state[&8] {
+        return (true, board_state[&2]);
+    } else if board_state[&3] == board_state[&6] && board_state[&6] == board_state[&9] {
+        return (true, board_state[&3]);
+    }
+    // diagonal search
+    else if board_state[&1] == board_state[&5] && board_state[&5] == board_state[&9] {
+        return (true, board_state[&1]);
+    } else if board_state[&3] == board_state[&5] && board_state[&5] == board_state[&7] {
+        return (true, board_state[&3]);
+    } else {
+        return (false, Marker::Empty);
     }
 }
-
-impl PartialEq for Row {
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0 || self.1 == other.1 || self.2 == other.2
-    }
-}
-
-impl Eq for Row {}
 
 impl std::fmt::Display for Board {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Board::Grid {
-                row_one,
-                row_two,
-                row_three,
-                ..
-            } => write!(f, "{}{}{}", row_one, row_two, row_three),
-            Board::Dynamic => write!(f, "{}", "coming soon!"),
-        }
-    }
-}
+        let board_state = &self.state;
 
-impl std::fmt::Display for Row {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let pretty_board = format!(
             "
         +------+------+------+\n
         |  {}  |  {}  |  {}  |\n
+        +------+------+------+\n
+        |  {}  |  {}  |  {}  |\n
+        +------+------+------+\n
+        |  {}  |  {}  |  {}  |\n
         +------+------+------+",
-            self.0, self.1, self.2
+            board_state[&0],
+            board_state[&1],
+            board_state[&2],
+            board_state[&3],
+            board_state[&4],
+            board_state[&5],
+            board_state[&6],
+            board_state[&7],
+            board_state[&8]
         );
 
         write!(f, "{}", pretty_board)
     }
+}
+
+#[cfg(test)]
+mod tests {
+    fn test_thing() {}
 }
