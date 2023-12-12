@@ -3,11 +3,12 @@
 
 use crate::{board::board::Board, world::World};
 use board::board::Outcome;
-use opponent::{MinMax, SimpleAI};
+use crate::opponent::{MinMax, SimpleAI};
 
 pub mod board;
 pub mod intro;
 pub mod world;
+pub mod opponent;
 
 fn main() {
     intro::title_message();

@@ -28,7 +28,6 @@ impl Board {
                 (9, Marker::Empty),
             ]),
             markers_placed: 0,
-            difficulty: 
         }
     }
 

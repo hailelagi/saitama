@@ -26,7 +26,6 @@ pub struct MinMax;
 
 struct Opponent {
     marker: Marker,
-    strategy: Strategy,
 }
 
 // impl Opponent {

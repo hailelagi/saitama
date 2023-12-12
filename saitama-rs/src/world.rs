@@ -1,12 +1,13 @@
 use rand::rngs::ThreadRng;
 use std::io::{self, Error, Write};
-use crate::board::marker::Marker;
+use crate::{board::marker::Marker, opponent};
 
 // Config struct to build and render tic-tac-toe game universe and session
 #[derive(Debug)]
 pub struct World {
     pub difficulty: Difficulty,
     pub player_marker: Marker,
+    pub opponent_marker: Marker,
     pub seed: ThreadRng,
 }
 
@@ -27,9 +28,16 @@ impl std::fmt::Display for Difficulty {
 
 impl World {
     pub fn build(difficulty: Difficulty, player_marker: Marker) -> World {
+        let opponent_marker = match player_marker {
+            Marker::X => Marker::O,
+            Marker::O => Marker::X,
+            Marker::Empty => Marker::Empty
+        };
+        
         World {
             difficulty,
             player_marker,
+            opponent_marker,
             seed: rand::thread_rng(),
         }
     }
