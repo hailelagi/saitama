@@ -1,6 +1,6 @@
 use rand::rngs::ThreadRng;
 use std::io::{self, Error, Write};
-use crate::{board::marker::Marker, opponent};
+use crate::board::marker::Marker;
 
 // Config struct to build and render tic-tac-toe game universe and session
 #[derive(Debug)]
@@ -53,7 +53,7 @@ pub fn player_input() -> io::Result<String> {
     Ok(input.to_owned())
 }
 
-pub fn position_input() -> io::Result<i32> {
+pub fn position_input() -> io::Result<usize> {
     output_message("Please input a number from 1 - 9 to select a position on the grid");
 
     let mut input_buffer = String::new();
@@ -62,7 +62,7 @@ pub fn position_input() -> io::Result<i32> {
     // this pattern is not idiomatic, there are third party libraries
     // which handle this much better e.g anyhow::Error for a large project
     // this will have to do
-    match input_buffer.trim().parse::<i32>() {
+    match input_buffer.trim().parse::<usize>() {
         Ok(n) => Ok(n),
         Err(e) => Err(Error::new(io::ErrorKind::InvalidInput, e.to_string())),
     }

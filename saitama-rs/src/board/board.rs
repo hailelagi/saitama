@@ -1,6 +1,5 @@
 use crate::board::marker::Marker;
 use crate::world::World;
-use std::collections::HashMap;
 
 pub enum Outcome {
     Win(Marker),
@@ -8,45 +7,45 @@ pub enum Outcome {
     Draw,
 }
 
+// A sort of clever way to represent the board of a tic tac toe game is using a bitmap
+// of unsigned ints The mapping of markers is roughly:
+// X => 11
+// 0 => 01
+// Empty => 00
+// You can then fit it nicely inside a tiny 16bit array `0000 0000 0000 0000`
+// to determine an `Outcome` by comparing the bits to the win condition
+// https://rclayton.silvrback.com/winner-in-tic-tac-toe
+// However this is such an incredibly simple problem idk why anyone would take it so far?
+// Apparently you can hash the winstates and do an O(1) lookup too?
+// but you can like do that anyway with a hashmap or a prealloc'd array [u8;8]
 pub struct Board {
-    pub state: HashMap<i32, Marker>,
+    pub state: [Marker; 8],
     markers_placed: i32,
 }
 
 impl Board {
     pub fn build(_world: &World) -> Self {
         Board {
-            state: HashMap::from([
-                (1, Marker::Empty),
-                (2, Marker::Empty),
-                (3, Marker::Empty),
-                (4, Marker::Empty),
-                (5, Marker::Empty),
-                (6, Marker::Empty),
-                (7, Marker::Empty),
-                (8, Marker::Empty),
-                (9, Marker::Empty),
-            ]),
+            state: [Marker::Empty; 8],
             markers_placed: 0,
         }
     }
 
-    pub fn place_position(&mut self, position: i32, marker: Marker) -> Option<Marker> {
+    pub fn place_position(&mut self, position: usize, marker: Marker) -> Option<Marker> {
         let board_state = &mut self.state;
 
-        match board_state.get(&position) {
-            Some(Marker::Empty) => {
+        match board_state[position] {
+            Marker::Empty => {
                 self.markers_placed += 1;
-                board_state.insert(position, marker);
+                board_state[position] = marker;
                 Some(marker)
-            },
-            None | Some(_) => None
+            }
+            _ => None,
         }
     }
 
     pub fn validate_game_rules(&self) -> Outcome {
-        let board_state = &self.state;
-        let game = winning_game(board_state);
+        let game = winning_game(&self.state);
         let (won, _) = game;
 
         if self.markers_placed < 3 {
@@ -77,28 +76,28 @@ impl Board {
     }
 }
 
-fn winning_game(board_state: &HashMap<i32, Marker>) -> (bool, Marker) {
+fn winning_game(board_state: &[Marker; 8]) -> (bool, Marker) {
     // row search O(1) baby, who cares if it's ugly :)
-    if board_state[&1] == board_state[&2] && board_state[&2] == board_state[&3] {
-        return (true, board_state[&1]);
-    } else if board_state[&4] == board_state[&5] && board_state[&5] == board_state[&6] {
-        return (true, board_state[&4]);
-    } else if board_state[&7] == board_state[&8] && board_state[&8] == board_state[&9] {
-        return (true, board_state[&7]);
+    if board_state[0] == board_state[1] && board_state[1] == board_state[2] {
+        return (true, board_state[1]);
+    } else if board_state[3] == board_state[4] && board_state[4] == board_state[5] {
+        return (true, board_state[4]);
+    } else if board_state[6] == board_state[7] && board_state[7] == board_state[8] {
+        return (true, board_state[7]);
     }
     // column search
-    else if board_state[&1] == board_state[&4] && board_state[&4] == board_state[&7] {
-        return (true, board_state[&1]);
-    } else if board_state[&2] == board_state[&5] && board_state[&5] == board_state[&8] {
-        return (true, board_state[&2]);
-    } else if board_state[&3] == board_state[&6] && board_state[&6] == board_state[&9] {
-        return (true, board_state[&3]);
+    else if board_state[0] == board_state[3] && board_state[3] == board_state[6] {
+        return (true, board_state[0]);
+    } else if board_state[1] == board_state[4] && board_state[4] == board_state[7] {
+        return (true, board_state[1]);
+    } else if board_state[2] == board_state[5] && board_state[5] == board_state[8] {
+        return (true, board_state[2]);
     }
     // diagonal search
-    else if board_state[&1] == board_state[&5] && board_state[&5] == board_state[&9] {
-        return (true, board_state[&1]);
-    } else if board_state[&3] == board_state[&5] && board_state[&5] == board_state[&7] {
-        return (true, board_state[&3]);
+    else if board_state[0] == board_state[4] && board_state[4] == board_state[8] {
+        return (true, board_state[0]);
+    } else if board_state[2] == board_state[4] && board_state[4] == board_state[6] {
+        return (true, board_state[3]);
     } else {
         return (false, Marker::Empty);
     }
@@ -117,15 +116,15 @@ impl std::fmt::Display for Board {
         +------+------+------+\n
         |  {}  |  {}  |  {}  |\n
         +------+------+------+",
-            board_state[&1],
-            board_state[&2],
-            board_state[&3],
-            board_state[&4],
-            board_state[&5],
-            board_state[&6],
-            board_state[&7],
-            board_state[&8],
-            board_state[&9]
+            board_state[0],
+            board_state[1],
+            board_state[2],
+            board_state[3],
+            board_state[4],
+            board_state[5],
+            board_state[6],
+            board_state[7],
+            board_state[8],
         );
 
         write!(f, "{}", pretty_board)
