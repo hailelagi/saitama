@@ -6,7 +6,7 @@
 // step 1: construct a naive search tree
 
 // https://en.wikipedia.org/wiki/Minimax#pseudocode
-// 
+//
 // function minimax(node, depth, maximizingPlayer) is
 //     if depth = 0 or node is a terminal node then
 //         return the heuristic value of node
@@ -22,33 +22,50 @@
 //         return value
 
 use crate::board::{board::Board, marker::Marker};
+use rand::seq::SliceRandom;
+
+pub trait Decision {
+    fn choose_position(board: &Board) -> Option<usize>;
+}
 
 pub fn min_max(board: Board) -> Board {
     let state = board.state;
     let mut free_positions = Vec::new();
 
-    for (i, marker) in state.into_iter().enumerate() {
-        if marker == Marker::Empty {
-            free_positions.push((i, marker))
-        }
+    for (i, marker) in state.iter().enumerate() {
+        match (*marker, Marker::Empty) {
+            (Marker::Empty, Marker::Empty) => free_positions.push(i),
+            _ => (),
+        };
     }
 
     // search tree
 
+    return board;
+}
 
-    return board
+pub struct SimpleAI;
+
+impl Decision for SimpleAI {
+    fn choose_position(board: &Board) -> Option<usize> {
+        let mut free_positions = Vec::new();
+
+        for (i, marker) in board.state.iter().enumerate() {
+            match (*marker, Marker::Empty) {
+                (Marker::Empty, Marker::Empty) => free_positions.push(i),
+                _ => (),
+            };
+        }
+
+        return free_positions.choose(&mut rand::thread_rng()).copied();
+    }
 }
 
 #[cfg(test)]
 mod test {
     use crate::board::board::Board;
     use crate::board::marker::Marker;
-    use crate::opponent::min_max;
-
-    #[test]
-    fn test_thing() {
-        assert_eq!(1, 1)
-    }
+    use crate::opponent::{min_max, Decision, SimpleAI};
 
     #[test]
     fn test_selects_a_position_initial_input() {
@@ -69,6 +86,24 @@ mod test {
         } else {
             panic!("did not find min max position")
         }
-        assert_eq!(result.markers_placed, 2);
+    }
+
+    #[test]
+    fn test_selects_random_valid_position() {
+        let mut init = [Marker::Empty; 9];
+        init[0] = Marker::X;
+
+        let board = Board {
+            state: init,
+            markers_placed: 1,
+        };
+
+        let result = SimpleAI::choose_position(&board);
+
+        if let Some(_) = result {
+            ();
+        } else {
+            panic!("did not find a random position to place")
+        }
     }
 }

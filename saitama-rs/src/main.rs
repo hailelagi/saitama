@@ -6,7 +6,8 @@
 
 use crate::{board::board::Board, world::World};
 use board::board::Outcome;
-// use crate::opponent::{MinMax, SimpleAI};
+use crate::opponent::SimpleAI;
+use crate::opponent::Decision;
 
 pub mod board;
 pub mod intro;
@@ -57,8 +58,8 @@ fn render_session(world: world::World) -> Result<(), std::io::Error> {
 
         match world.difficulty {
             world::Difficulty::Easy => {
-                // position = SimpleAI::choose_position(world, board);
-                let position = 0 as usize;
+                let position = SimpleAI::choose_position(&board).unwrap();
+
                 Board::place_position(&mut board, position, world.opponent_marker);
             }
             world::Difficulty::Hard => {
