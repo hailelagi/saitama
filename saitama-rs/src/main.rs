@@ -6,7 +6,7 @@
 
 use crate::{board::board::Board, world::World};
 use board::board::Outcome;
-use crate::opponent::{MinMax, SimpleAI};
+// use crate::opponent::{MinMax, SimpleAI};
 
 pub mod board;
 pub mod intro;

@@ -20,7 +20,7 @@ pub enum Outcome {
 // but you can like do that anyway with a hashmap or a prealloc'd array [u8;8]
 pub struct Board {
     pub state: [Marker; 9],
-    markers_placed: i32,
+    pub markers_placed: i32,
 }
 
 impl Board {
