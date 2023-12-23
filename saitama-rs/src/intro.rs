@@ -24,7 +24,6 @@ pub fn select_difficulty() -> io::Result<Difficulty> {
 
 pub fn title_message() {
     // It's okay to panic if STDIN/STDERR is unavailable
-    // TODO: why does writing to stderr happen before stdout?
     return io::stderr()
         .write_all(TITLE_MESSAGE)
         .expect("cannot write to STDERR for some reason :(");
