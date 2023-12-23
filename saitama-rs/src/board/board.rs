@@ -19,14 +19,14 @@ pub enum Outcome {
 // Apparently you can hash the winstates and do an O(1) lookup too?
 // but you can like do that anyway with a hashmap or a prealloc'd array [u8;8]
 pub struct Board {
-    pub state: [Marker; 8],
+    pub state: [Marker; 9],
     markers_placed: i32,
 }
 
 impl Board {
     pub fn build(_world: &World) -> Self {
         Board {
-            state: [Marker::Empty; 8],
+            state: [Marker::Empty; 9],
             markers_placed: 0,
         }
     }
@@ -76,7 +76,7 @@ impl Board {
     }
 }
 
-fn winning_game(board_state: &[Marker; 8]) -> (bool, Marker) {
+fn winning_game(board_state: &[Marker; 9]) -> (bool, Marker) {
     // row search O(1) baby, who cares if it's ugly :)
     if board_state[0] == board_state[1] && board_state[1] == board_state[2] {
         return (true, board_state[1]);

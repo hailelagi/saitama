@@ -1,6 +1,9 @@
 // must read and write to STDOUT using native APIs
 // Implement a game of tic tac toe with a min max ai
 
+// https://stackoverflow.com/questions/41820114/hashing-every-combination-of-tic-tac-toe-table
+// https://leetcode.com/problems/find-winner-on-a-tic-tac-toe-game/
+
 use crate::{board::board::Board, world::World};
 use board::board::Outcome;
 use crate::opponent::{MinMax, SimpleAI};
@@ -54,11 +57,13 @@ fn render_session(world: world::World) -> Result<(), std::io::Error> {
 
         match world.difficulty {
             world::Difficulty::Easy => {
-                position = SimpleAI::choose_position(world, board);
+                // position = SimpleAI::choose_position(world, board);
+                let position = 0 as usize;
                 Board::place_position(&mut board, position, world.opponent_marker);
             }
             world::Difficulty::Hard => {
-                position = MinMax::choose_position(world, board);
+               //  position = MinMax::choose_position(world, board);
+                let position = 0 as usize;
                 Board::place_position(&mut board, position, world.opponent_marker);
             }
         }
