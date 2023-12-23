@@ -1,6 +1,6 @@
+use crate::board::marker::Marker;
 use rand::rngs::ThreadRng;
 use std::io::{self, Error, Write};
-use crate::board::marker::Marker;
 
 // Config struct to build and render tic-tac-toe game universe and session
 #[derive(Debug)]
@@ -31,9 +31,9 @@ impl World {
         let opponent_marker = match player_marker {
             Marker::X => Marker::O,
             Marker::O => Marker::X,
-            Marker::Empty => Marker::Empty
+            Marker::Empty => Marker::Empty,
         };
-        
+
         World {
             difficulty,
             player_marker,
@@ -63,8 +63,20 @@ pub fn position_input() -> io::Result<usize> {
     // which handle this much better e.g anyhow::Error for a large project
     // this will have to do
     match input_buffer.trim().parse::<usize>() {
-        Ok(n) => Ok(n),
+        // off by one errors will be the death of me
+        Ok(n) => validate_board_range(n),
         Err(e) => Err(Error::new(io::ErrorKind::InvalidInput, e.to_string())),
+    }
+}
+
+fn validate_board_range(n: usize) -> io::Result<usize> {
+    if n >= 1 && n <= 9 {
+        return Ok(n - 1);
+    } else {
+        Err(Error::new(
+            io::ErrorKind::InvalidInput,
+            "position not on grid".to_string(),
+        ))
     }
 }
 
