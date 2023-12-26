@@ -24,7 +24,7 @@ pub struct Board {
 }
 
 impl Board {
-    pub fn build(_world: &World) -> Self {
+    pub fn new(_world: &World) -> Self {
         Board {
             state: [Marker::Empty; 9],
             markers_placed: 0,
@@ -45,17 +45,21 @@ impl Board {
     }
 
     pub fn validate_game_rules(&self) -> Outcome {
-        let game = winning_game(&self.state);
-        let (won, _) = game;
-
         if self.markers_placed < 3 {
             return Outcome::Undecided;
-        } else if self.markers_placed == 9 && !won {
-            return Outcome::Draw;
         } else {
+            let game = winning_game(&self.state);
+            let (won, _) = game;
+
             match game {
                 (true, marker) => Outcome::Win(marker),
-                (false, _) => Outcome::Undecided,
+                (false, _) => {
+                    if self.markers_placed == 9 && !won {
+                        return Outcome::Draw;
+                    } else {
+                        return Outcome::Undecided;
+                    }
+                }
             }
         }
     }
@@ -131,6 +135,9 @@ impl std::fmt::Display for Board {
     }
 }
 
+// todo: test game rules/ logic
+// it would be nice to experiment with fuzz testing and the proptest
+// api, overkill but would be good for learning
 #[cfg(test)]
 mod tests {
     fn test_thing() {}

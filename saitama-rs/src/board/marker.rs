@@ -12,7 +12,6 @@ impl Marker {
         match mark {
             "X" => Ok(Marker::X),
             "O" => Ok(Marker::O),
-            // todo: custom emoji markers!
             _ => Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
                 "did you mean X or O?",

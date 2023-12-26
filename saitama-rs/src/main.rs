@@ -4,15 +4,14 @@
 // https://stackoverflow.com/questions/41820114/hashing-every-combination-of-tic-tac-toe-table
 // https://leetcode.com/problems/find-winner-on-a-tic-tac-toe-game/
 
+use crate::opponent::{Decision, Minimax, SimpleAI};
 use crate::{board::board::Board, world::World};
 use board::board::Outcome;
-use crate::opponent::SimpleAI;
-use crate::opponent::Decision;
 
 pub mod board;
 pub mod intro;
-pub mod world;
 pub mod opponent;
+pub mod world;
 
 fn main() {
     intro::title_message();
@@ -48,7 +47,7 @@ fn render_intro() -> Result<world::World, std::io::Error> {
 }
 
 fn render_session(world: world::World) -> Result<(), std::io::Error> {
-    let mut board = Board::build(&world);
+    let mut board = Board::new(&world);
     let example_board = format!("{}", Board::example_board());
     world::output_message(&example_board);
 
@@ -56,15 +55,15 @@ fn render_session(world: world::World) -> Result<(), std::io::Error> {
         let position = world::position_input()?;
         Board::place_position(&mut board, position, world.player_marker);
 
+        // maybe refactor using trait bound
+        // error handling remove unwrap()
         match world.difficulty {
             world::Difficulty::Easy => {
                 let position = SimpleAI::choose_position(&board).unwrap();
-
                 Board::place_position(&mut board, position, world.opponent_marker);
             }
             world::Difficulty::Hard => {
-               //  position = MinMax::choose_position(world, board);
-                let position = 0 as usize;
+                let position = Minimax::choose_position(&board).unwrap();
                 Board::place_position(&mut board, position, world.opponent_marker);
             }
         }

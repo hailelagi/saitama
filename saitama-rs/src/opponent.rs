@@ -28,23 +28,25 @@ pub trait Decision {
     fn choose_position(board: &Board) -> Option<usize>;
 }
 
-pub fn min_max(board: Board) -> Board {
-    let state = board.state;
-    let mut free_positions = Vec::new();
-
-    for (i, marker) in state.iter().enumerate() {
-        match (*marker, Marker::Empty) {
-            (Marker::Empty, Marker::Empty) => free_positions.push(i),
-            _ => (),
-        };
-    }
-
-    // search tree
-
-    return board;
-}
-
 pub struct SimpleAI;
+pub struct Minimax;
+
+impl Decision for Minimax {
+    fn choose_position(board: &Board) -> Option<usize> {
+        let state = board.state;
+        let mut free_positions = Vec::new();
+
+        for (i, marker) in state.iter().enumerate() {
+            match (*marker, Marker::Empty) {
+                (Marker::Empty, Marker::Empty) => free_positions.push(i),
+                _ => (),
+            };
+        }
+
+        // todo: search tree
+        return None;
+    }
+}
 
 impl Decision for SimpleAI {
     fn choose_position(board: &Board) -> Option<usize> {
@@ -65,7 +67,7 @@ impl Decision for SimpleAI {
 mod test {
     use crate::board::board::Board;
     use crate::board::marker::Marker;
-    use crate::opponent::{min_max, Decision, SimpleAI};
+    use crate::opponent::{Decision, Minimax, SimpleAI};
 
     #[test]
     fn test_selects_a_position_initial_input() {
@@ -77,11 +79,9 @@ mod test {
             markers_placed: 1,
         };
 
-        let result = min_max(board);
+        let result = Minimax::choose_position(&board);
 
-        let found_ai_mark = result.state.iter().find(|pos| **pos == Marker::O);
-
-        if let Some(_) = found_ai_mark {
+        if let Some(_) = result {
             ();
         } else {
             panic!("did not find min max position")
