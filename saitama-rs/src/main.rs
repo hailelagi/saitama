@@ -4,24 +4,20 @@
 // https://stackoverflow.com/questions/41820114/hashing-every-combination-of-tic-tac-toe-table
 // https://leetcode.com/problems/find-winner-on-a-tic-tac-toe-game/
 
-use crate::opponent::{Decision, Minimax, SimpleAI};
-use crate::{board::board::Board, world::World};
-use board::board::Outcome;
-use opponent::CombinatorialSearch;
+use crate::board::{settings::Settings, Board, Outcome};
 
 pub mod board;
-pub mod intro;
-pub mod opponent;
-pub mod world;
+pub mod decision;
+pub mod repl;
 
 fn main() {
-    intro::title_message();
+    repl::title_message();
 
     loop {
         match render_world() {
             Ok(()) => outro(),
             Err(e) => {
-                world::output_message(e.to_string().as_str());
+                repl::output_message(e.to_string().as_str());
                 continue;
             }
         }
@@ -29,68 +25,57 @@ fn main() {
 }
 
 fn render_world() -> Result<(), std::io::Error> {
-    let game_world: World = render_intro()?;
+    let game_world: Settings = render_intro()?;
     let board_session = render_session(game_world)?;
 
     Ok(board_session)
 }
 
-fn render_intro() -> Result<world::World, std::io::Error> {
-    let marker = intro::marker_choice()?;
-    let difficulty = intro::select_difficulty()?;
-    let game_world = World::build(difficulty, marker);
+fn render_intro() -> Result<Settings, std::io::Error> {
+    let marker = repl::marker_choice()?;
+    let difficulty = repl::select_difficulty()?;
+    let game_world = Settings::build(difficulty, marker);
 
     let confirm_message = format!("You're playing on {} mode :)", game_world.difficulty);
 
-    world::output_message(&confirm_message);
+    repl::output_message(&confirm_message);
 
     Ok(game_world)
 }
 
-fn render_session(world: world::World) -> Result<(), std::io::Error> {
-    let mut board = Board::new(&world);
+fn render_session(settings: Settings) -> Result<(), std::io::Error> {
+    let mut board = Board::new(&settings);
     let example_board = format!("{}", Board::example_board());
-    world::output_message(&example_board);
+    repl::output_message(&example_board);
 
     loop {
-        let position = world::position_input()?;
-        let marker = Board::place_position(&mut board, position, world.player_marker);
-
-        if marker.is_none(){
-            println!("Position already occupied");
-            continue;
-        }
-
-        // maybe refactor using trait bound
-        // error handling remove unwrap()
-        match world.difficulty {
-            world::Difficulty::Easy => {
-                let position = SimpleAI::choose_position(&board);
-                if let Some(position) = position{
-                    Board::place_position(&mut board, position, world.opponent_marker);
-                }
+        let position = match repl::position_input() {
+            Ok(p) => p,
+            Err(e) => {
+                repl::output_message(e.to_string().as_str());
+                continue;
             }
-            world::Difficulty::Hard => {
-                let position = CombinatorialSearch::choose_position(&board);
-                if let Some(position) = position{
-                    Board::place_position(&mut board, position, world.opponent_marker);
-                }
-            }
+        };
+
+        if let Some(ai_position) = decision::choose_position(board.settings.difficulty, &board) {
+            Board::place_position(&mut board, ai_position, settings.opponent_marker);
+        } else {
+            repl::output_message("ai cannot choose a position!");
         }
 
         match board.validate_game_rules() {
             Outcome::Draw => {
-                world::output_message(&format!("{}", &board));
-                world::output_message("the game ends as a draw!");
+                repl::output_message(&format!("{}", &board));
+                repl::output_message("the game ends as a draw!");
                 break Ok(());
             }
             Outcome::Win(winner) => {
-                world::output_message(&format!("{}", &board));
-                world::output_message(&format!("{} is the winner!", winner));
+                repl::output_message(&format!("{}", &board));
+                repl::output_message(&format!("{} is the winner!", winner));
                 break Ok(());
             }
             Outcome::Undecided => {
-                world::output_message(&format!("{}", &board));
+                repl::output_message(&format!("{}", &board));
                 continue;
             }
         }
@@ -98,6 +83,6 @@ fn render_session(world: world::World) -> Result<(), std::io::Error> {
 }
 
 fn outro() {
-    println!("I will do this later, I do not like panics lol");
+    todo!("replace me with a proper exit");
     std::process::exit(0)
 }
