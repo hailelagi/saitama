@@ -1,6 +1,8 @@
 use crate::board::{marker::Marker, Board};
 use crate::decision::Decision;
 
+use super::simple::Simple;
+
 pub struct CombinatorialSearch;
 
 impl Decision for CombinatorialSearch {
@@ -23,7 +25,7 @@ impl Decision for CombinatorialSearch {
         if must_defend.len() != 0 {
             return Some(must_defend[0]);
         } else {
-            None
+            Simple::choose_position(free_positions, board)
         }
     }
 }
