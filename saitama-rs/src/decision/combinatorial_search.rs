@@ -1,5 +1,6 @@
 use crate::board::{marker::Marker, Board};
 use crate::decision::Decision;
+
 pub struct CombinatorialSearch;
 
 impl Decision for CombinatorialSearch {

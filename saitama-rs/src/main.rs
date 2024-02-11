@@ -85,6 +85,6 @@ fn render_session(settings: Settings) -> Result<(), std::io::Error> {
 }
 
 fn outro() {
-    todo!("replace me with a proper exit");
+    repl::output_message("Thanks for playing!");
     std::process::exit(0)
 }
