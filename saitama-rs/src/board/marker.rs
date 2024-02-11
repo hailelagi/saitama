@@ -1,4 +1,4 @@
-use std::io;
+use anyhow::{anyhow, Result};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Marker {
@@ -8,14 +8,11 @@ pub enum Marker {
 }
 
 impl Marker {
-    pub fn new(mark: &str) -> io::Result<Self> {
+    pub fn new(mark: &str) -> Result<Self> {
         match mark {
             "X" => Ok(Marker::X),
             "O" => Ok(Marker::O),
-            _ => Err(io::Error::new(
-                io::ErrorKind::InvalidInput,
-                "did you mean X or O?",
-            )),
+            m => Err(anyhow!("did you mean X or O?: {}", m)),
         }
     }
 }

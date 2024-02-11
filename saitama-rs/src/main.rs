@@ -6,6 +6,8 @@
 
 use crate::board::{settings::Settings, Board, Outcome};
 
+use anyhow::Result;
+
 pub mod board;
 pub mod decision;
 pub mod repl;
@@ -24,14 +26,14 @@ fn main() {
     }
 }
 
-fn render_world() -> Result<(), std::io::Error> {
+fn render_world() -> Result<()> {
     let init = render_intro()?;
     let board_session = render_session(init)?;
 
     Ok(board_session)
 }
 
-fn render_intro() -> Result<Settings, std::io::Error> {
+fn render_intro() -> Result<Settings> {
     let marker = repl::marker_choice()?;
     let difficulty = repl::select_difficulty()?;
     let game_world = Settings::build(difficulty, marker);
@@ -43,7 +45,7 @@ fn render_intro() -> Result<Settings, std::io::Error> {
     Ok(game_world)
 }
 
-fn render_session(settings: Settings) -> Result<(), std::io::Error> {
+fn render_session(settings: Settings) -> Result<()> {
     let player_marker = settings.player_marker;
     let opponent_marker = settings.opponent_marker;
 
