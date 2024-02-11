@@ -7,6 +7,7 @@
 use crate::opponent::{Decision, Minimax, SimpleAI};
 use crate::{board::board::Board, world::World};
 use board::board::Outcome;
+use opponent::CombinatorialSearch;
 
 pub mod board;
 pub mod intro;
@@ -53,27 +54,38 @@ fn render_session(world: world::World) -> Result<(), std::io::Error> {
 
     loop {
         let position = world::position_input()?;
-        Board::place_position(&mut board, position, world.player_marker);
+        let marker = Board::place_position(&mut board, position, world.player_marker);
+
+        if marker.is_none(){
+            println!("Position already occupied");
+            continue;
+        }
 
         // maybe refactor using trait bound
         // error handling remove unwrap()
         match world.difficulty {
             world::Difficulty::Easy => {
-                let position = SimpleAI::choose_position(&board).unwrap();
-                Board::place_position(&mut board, position, world.opponent_marker);
+                let position = SimpleAI::choose_position(&board);
+                if let Some(position) = position{
+                    Board::place_position(&mut board, position, world.opponent_marker);
+                }
             }
             world::Difficulty::Hard => {
-                let position = Minimax::choose_position(&board).unwrap();
-                Board::place_position(&mut board, position, world.opponent_marker);
+                let position = CombinatorialSearch::choose_position(&board);
+                if let Some(position) = position{
+                    Board::place_position(&mut board, position, world.opponent_marker);
+                }
             }
         }
 
         match board.validate_game_rules() {
             Outcome::Draw => {
+                world::output_message(&format!("{}", &board));
                 world::output_message("the game ends as a draw!");
                 break Ok(());
             }
             Outcome::Win(winner) => {
+                world::output_message(&format!("{}", &board));
                 world::output_message(&format!("{} is the winner!", winner));
                 break Ok(());
             }
@@ -86,5 +98,6 @@ fn render_session(world: world::World) -> Result<(), std::io::Error> {
 }
 
 fn outro() {
-    panic!("replace me with a proper exit")
+    println!("I will do this later, I do not like panics lol");
+    std::process::exit(0)
 }
