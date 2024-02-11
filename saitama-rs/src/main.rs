@@ -5,9 +5,6 @@
 // https://leetcode.com/problems/find-winner-on-a-tic-tac-toe-game/
 
 use crate::board::{settings::Settings, Board, Outcome};
-use crate::opponent::Decision;
-use crate::{board::board::Board, world::World};
-use board::board::Outcome;
 
 pub mod board;
 pub mod decision;
@@ -52,13 +49,15 @@ fn render_session(settings: Settings) -> Result<(), std::io::Error> {
     repl::output_message(&example_board);
 
     loop {
-        let position = match repl::position_input() {
+        let player_position = match repl::position_input() {
             Ok(p) => p,
             Err(e) => {
                 repl::output_message(e.to_string().as_str());
                 continue;
             }
         };
+
+        Board::place_position(&mut board, player_position, settings.player_marker);
 
         if let Some(ai_position) = decision::choose_position(board.settings.difficulty, &board) {
             Board::place_position(&mut board, ai_position, settings.opponent_marker);
