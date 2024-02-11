@@ -1,8 +1,8 @@
-pub mod marker;
-pub mod settings;
-
 use crate::board::marker::Marker;
 use crate::board::settings::Settings;
+
+pub mod marker;
+pub mod settings;
 
 pub enum Outcome {
     Win(Marker),
@@ -34,10 +34,6 @@ impl Board {
             markers_placed: 0,
             settings,
         }
-    }
-
-    pub fn get_markers(&self) -> (Marker, Marker) {
-        (self.settings.opponent_marker, self.settings.player_marker)
     }
 
     pub fn place_position(&mut self, position: usize, marker: Marker) -> Option<Marker> {

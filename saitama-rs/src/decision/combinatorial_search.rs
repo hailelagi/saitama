@@ -30,7 +30,8 @@ impl Decision for CombinatorialSearch {
 
 fn vulnerable_positions(board: &Board) -> Vec<usize> {
     let mut risky_positions = Vec::new();
-    let (_, player_marker) = board.get_markers();
+    let settings = &board.settings;
+
     let winning_positions = [
         [0, 1, 2],
         [3, 4, 5],
@@ -45,8 +46,8 @@ fn vulnerable_positions(board: &Board) -> Vec<usize> {
 
     for winning_position in winning_positions {
         for permutation in permutations {
-            if board.state[winning_position[permutation[0]]] == player_marker
-                && board.state[winning_position[permutation[1]]] == player_marker
+            if board.state[winning_position[permutation[0]]] == settings.player_marker
+                && board.state[winning_position[permutation[1]]] == settings.player_marker
             {
                 let missing = 3 - (permutation[0] + permutation[1]);
                 if let Marker::Empty = board.state[winning_position[missing]] {
@@ -61,7 +62,8 @@ fn vulnerable_positions(board: &Board) -> Vec<usize> {
 
 fn favorable_positions(board: &Board) -> Vec<usize> {
     let mut good_positions = Vec::new();
-    let (opponent_marker, _) = board.get_markers();
+    let settings = &board.settings;
+
     let winning_positions = [
         [0, 1, 2],
         [3, 4, 5],
@@ -76,8 +78,8 @@ fn favorable_positions(board: &Board) -> Vec<usize> {
 
     for winning_position in winning_positions {
         for permutation in permutations {
-            if board.state[winning_position[permutation[0]]] == opponent_marker
-                && board.state[winning_position[permutation[1]]] == opponent_marker
+            if board.state[winning_position[permutation[0]]] == settings.opponent_marker
+                && board.state[winning_position[permutation[1]]] == settings.opponent_marker
             {
                 let missing = 3 - (permutation[0] + permutation[1]);
                 if let Marker::Empty = board.state[winning_position[missing]] {

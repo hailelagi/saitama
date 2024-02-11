@@ -9,7 +9,12 @@ mod combinatorial_search;
 mod mini_max;
 mod simple;
 
-pub trait Decision {
+/*
+todo: this Trait bound can be further constrained such that dispatch can
+only be to an impl of Decision from the public difficulty
+*/
+
+trait Decision {
     fn choose_position(free_positions: &mut Vec<usize>, board: &Board) -> Option<usize>;
 }
 
