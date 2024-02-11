@@ -21,14 +21,14 @@ pub enum Outcome {
 // However this is such an incredibly simple problem idk why anyone would take it so far?
 // Apparently you can hash the winstates and do an O(1) lookup too?
 // but you can like do that anyway with a hashmap or a prealloc'd array [u8;8]
-pub struct Board<'a> {
+pub struct Board {
     pub state: [Marker; 9],
     pub markers_placed: i32,
-    pub settings: &'a Settings,
+    pub settings: Settings,
 }
 
-impl<'a> Board<'a> {
-    pub fn new(settings: &'a Settings) -> Self {
+impl Board {
+    pub fn new(settings: Settings) -> Self {
         Board {
             state: [Marker::Empty; 9],
             markers_placed: 0,
@@ -116,7 +116,7 @@ fn winning_game(board_state: &[Marker; 9]) -> (bool, Marker) {
     }
 }
 
-impl<'a> std::fmt::Display for Board<'a> {
+impl std::fmt::Display for Board {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let board_state = &self.state;
 

@@ -105,7 +105,7 @@ mod test {
         let player_marker = Marker::X;
         init[0] = player_marker;
 
-        let settings = &settings::Settings::build(HardEnum, player_marker);
+        let settings = settings::Settings::build(HardEnum, player_marker);
 
         let board = Board {
             state: init,

@@ -25,8 +25,8 @@ fn main() {
 }
 
 fn render_world() -> Result<(), std::io::Error> {
-    let game_world: Settings = render_intro()?;
-    let board_session = render_session(game_world)?;
+    let init = render_intro()?;
+    let board_session = render_session(init)?;
 
     Ok(board_session)
 }
@@ -44,7 +44,10 @@ fn render_intro() -> Result<Settings, std::io::Error> {
 }
 
 fn render_session(settings: Settings) -> Result<(), std::io::Error> {
-    let mut board = Board::new(&settings);
+    let player_marker = settings.player_marker;
+    let opponent_marker = settings.opponent_marker;
+
+    let mut board = Board::new(settings);
     let example_board = format!("{}", Board::example_board());
     repl::output_message(&example_board);
 
@@ -57,10 +60,10 @@ fn render_session(settings: Settings) -> Result<(), std::io::Error> {
             }
         };
 
-        Board::place_position(&mut board, player_position, settings.player_marker);
+        Board::place_position(&mut board, player_position, player_marker);
 
         if let Some(ai_position) = decision::choose_position(board.settings.difficulty, &board) {
-            Board::place_position(&mut board, ai_position, settings.opponent_marker);
+            Board::place_position(&mut board, ai_position, opponent_marker);
         } else {
             repl::output_message("ai cannot choose a position!");
         }
