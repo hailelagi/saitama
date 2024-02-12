@@ -5,6 +5,19 @@ use super::simple::Simple;
 
 pub struct CombinatorialSearch;
 
+const WINNING_POSITIONS: [[usize; 3]; 8] = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+];
+
+const PERMUTATIONS: [[usize; 2]; 3] = [[0, 1], [0, 2], [1, 2]];
+
 impl Decision for CombinatorialSearch {
     fn choose_position(free_positions: &mut Vec<usize>, board: &Board) -> Option<usize> {
         let state = board.state;
@@ -16,12 +29,12 @@ impl Decision for CombinatorialSearch {
             };
         }
 
-        let favorable_positions = favorable_positions(board);
+        let favorable_positions = enumerate_positions(board, board.settings.opponent_marker);
         if favorable_positions.len() != 0 {
             return Some(favorable_positions[0]);
         }
 
-        let must_defend = vulnerable_positions(board);
+        let must_defend = enumerate_positions(board, board.settings.player_marker);
         if must_defend.len() != 0 {
             return Some(must_defend[0]);
         } else {
@@ -30,26 +43,13 @@ impl Decision for CombinatorialSearch {
     }
 }
 
-fn vulnerable_positions(board: &Board) -> Vec<usize> {
+fn enumerate_positions(board: &Board, marker: Marker) -> Vec<usize> {
     let mut risky_positions = Vec::new();
-    let settings = &board.settings;
 
-    let winning_positions = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-    ];
-    let permutations = [[0usize, 1], [0, 2], [1, 2]];
-
-    for winning_position in winning_positions {
-        for permutation in permutations {
-            if board.state[winning_position[permutation[0]]] == settings.player_marker
-                && board.state[winning_position[permutation[1]]] == settings.player_marker
+    for winning_position in WINNING_POSITIONS {
+        for permutation in PERMUTATIONS {
+            if board.state[winning_position[permutation[0]]] == marker
+                && board.state[winning_position[permutation[1]]] == marker
             {
                 let missing = 3 - (permutation[0] + permutation[1]);
                 if let Marker::Empty = board.state[winning_position[missing]] {
@@ -60,37 +60,6 @@ fn vulnerable_positions(board: &Board) -> Vec<usize> {
         }
     }
     risky_positions
-}
-
-fn favorable_positions(board: &Board) -> Vec<usize> {
-    let mut good_positions = Vec::new();
-    let settings = &board.settings;
-
-    let winning_positions = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-    ];
-    let permutations = [[0usize, 1], [0, 2], [1, 2]];
-
-    for winning_position in winning_positions {
-        for permutation in permutations {
-            if board.state[winning_position[permutation[0]]] == settings.opponent_marker
-                && board.state[winning_position[permutation[1]]] == settings.opponent_marker
-            {
-                let missing = 3 - (permutation[0] + permutation[1]);
-                if let Marker::Empty = board.state[winning_position[missing]] {
-                    good_positions.push(winning_position[missing]);
-                }
-            }
-        }
-    }
-    good_positions
 }
 
 #[cfg(test)]
