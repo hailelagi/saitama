@@ -2,5 +2,8 @@
     "rust-analyzer.linkedProjects": [
         "./saitama-rs/Cargo.toml",
         "./saitama-rs/Cargo.toml"
-    ]
+    ],
+    "files.associations": {
+        "ostream": "cpp"
+    }
 }
